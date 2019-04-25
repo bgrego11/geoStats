@@ -2,6 +2,10 @@ from django.db import models
 
 # Create your models here.
 class OecdStat(models.Model):
+
+    def __str__(self):
+        return "{}".format(self.country)
+
     country = models.CharField(db_column='Country', max_length=255, blank=True, null=True)  # Field name made lowercase.
     dwellings_without_basic_facilities_as_pct = models.CharField(db_column='Dwellings without basic facilities as pct', max_length=255, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
     housing_expenditure_as_pct = models.IntegerField(db_column='Housing expenditure as pct', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
@@ -23,6 +27,19 @@ class OecdStat(models.Model):
     voter_turnout_as_pct = models.IntegerField(db_column='Voter turnout as pct', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
     life_expectancy_in_yrs = models.CharField(db_column='Life expectancy in yrs', max_length=255, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
     self_reported_health_as_pct = models.IntegerField(db_column='Self-reported health as pct', blank=True, null=True)
+
+   
+    def ranking(self):
+        rankings = {}
+        for field in OecdStat._meta.get_fields():
+            results = OecdStat.objects.order_by(field.name)
+            names = [x.country for x in results]
+            rank = names.index(self.country) + 1
+            rankings[field.name] = rank
+        return rankings
+
+
+
 
     class Meta:
         managed = False
